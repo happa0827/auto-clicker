@@ -1,0 +1,29 @@
+.fields {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.pair > *,
+.valueWithUnit > * {
+  min-width: 0;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.valueWithUnit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 8rem;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+@media (max-width: 420px) {
+  .pair,
+  .valueWithUnit {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

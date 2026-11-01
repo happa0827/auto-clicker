@@ -1,0 +1,27 @@
+.section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.save > * {
+  min-width: 0;
+}
+
+.save {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+@media (max-width: 420px) {
+  .save {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
