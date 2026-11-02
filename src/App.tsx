@@ -5,6 +5,7 @@ import { Button } from "@/components/arc/button/button";
 import { Input } from "@/components/arc/input/input";
 import { RadioGroup } from "@/components/arc/radio-group/radio-group";
 import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
+import { AboutSection } from "@/components/app/about-section";
 import { HotkeysSection } from "@/components/app/hotkeys-section";
 import { PresetsSection } from "@/components/app/presets-section";
 import { StartupSection } from "@/components/app/startup-section";
@@ -164,7 +165,6 @@ export default function App() {
       <div className={styles.scroller}>
     <main className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.version}>v{pkg.version}</p>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>オートクリッカー</h1>
           <Badge tone={running ? "success" : "neutral"} dot={running}>
@@ -390,6 +390,13 @@ export default function App() {
                 }}
               />
             ) : null}
+          </section>
+
+          <section className={styles.section} aria-labelledby="about-heading">
+            <h2 id="about-heading" className={styles.heading}>
+              アプリについて
+            </h2>
+            <AboutSection version={pkg.version} />
           </section>
         </>
       )}

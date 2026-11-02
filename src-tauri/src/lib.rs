@@ -247,6 +247,26 @@ fn set_autostart(app: AppHandle, state: tauri::State<AppState>, enabled: bool) -
     state.store.save_settings(&settings).map_err(|e| AutostartError(format!("{e:?}")))
 }
 
+/// 手動のアップデート確認。失敗（オフライン等）は文言にして返す。
+#[tauri::command]
+async fn check_for_update(app: AppHandle) -> Result<updater::CheckOutcome, String> {
+    updater::check_interactive(&app).await.map_err(|e| e.to_string())
+}
+
+const REPOSITORY_URL: &str = "https://github.com/happa0827/auto-clicker";
+
+/// GitHub のリポジトリを既定のブラウザで開く。URL は固定で、画面からは渡せない。
+#[tauri::command]
+fn open_repository() -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    let mut command = std::process::Command::new("explorer.exe");
+    #[cfg(target_os = "macos")]
+    let mut command = std::process::Command::new("open");
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let mut command = std::process::Command::new("xdg-open");
+    command.arg(REPOSITORY_URL).spawn().map(|_| ()).map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn set_start_in_tray(state: tauri::State<AppState>, enabled: bool) -> Result<(), String> {
     let mut settings = state.store.load_settings();
@@ -418,6 +438,8 @@ pub fn run() {
             set_stop,
             set_autostart,
             set_start_in_tray,
+            check_for_update,
+            open_repository,
             get_sequence,
             save_sequence,
             list_presets,

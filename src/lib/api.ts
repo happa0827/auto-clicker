@@ -6,6 +6,8 @@ import type { HotkeyError, Hotkeys } from "./hotkeys";
 
 export type SetHotkeysResult = { ok: true; hotkeys: Hotkeys } | { ok: false; error: HotkeyError };
 
+export type UpdateCheck = { ok: true; outcome: "up_to_date" | "declined" } | { ok: false; error: string };
+
 export interface Listeners {
   onRunEvent: (event: RunEvent) => void;
   onStartError: (error: StartError) => void;
@@ -18,6 +20,8 @@ export interface Api {
   setStop(stop: StopCondition): Promise<void>;
   setAutostart(enabled: boolean): Promise<{ ok: true } | { ok: false; error: string }>;
   setStartInTray(enabled: boolean): Promise<void>;
+  checkForUpdate(): Promise<UpdateCheck>;
+  openRepository(): Promise<void>;
   getSequence(): Promise<Sequence>;
   saveSequence(sequence: Sequence): Promise<void>;
   listPresets(): Promise<Preset[]>;
@@ -42,6 +46,14 @@ const tauriApi: Api = {
     }
   },
   setStartInTray: (enabled) => invoke("set_start_in_tray", { enabled }),
+  async checkForUpdate() {
+    try {
+      return { ok: true, outcome: await invoke<"up_to_date" | "declined">("check_for_update") };
+    } catch (error) {
+      return { ok: false, error: String(error) };
+    }
+  },
+  openRepository: () => invoke("open_repository"),
   getSequence: () => invoke("get_sequence"),
   saveSequence: (sequence) => invoke("save_sequence", { sequence }),
   listPresets: () => invoke("list_presets"),
@@ -139,6 +151,12 @@ function createMockApi(): Api {
       return { ok: true };
     },
     setStartInTray: async (enabled) => void (settings = { ...settings, start_in_tray: enabled }),
+    async checkForUpdate() {
+      await new Promise((resolve) => window.setTimeout(resolve, 600));
+      if (demo === "update-fails") return { ok: false, error: "ネットワークに接続できません" };
+      return { ok: true, outcome: "up_to_date" };
+    },
+    openRepository: async () => void window.open("https://github.com/happa0827/auto-clicker", "_blank"),
     getSequence: async () => sequence,
     saveSequence: async (next) => void (sequence = next),
     listPresets: async () => presets,

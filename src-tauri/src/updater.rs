@@ -11,7 +11,20 @@ pub fn check_on_startup(app: AppHandle) {
 }
 
 async fn check(app: &AppHandle) -> tauri_plugin_updater::Result<()> {
-    let Some(update) = app.updater()?.check().await? else { return Ok(()) };
+    check_interactive(app).await.map(|_| ())
+}
+
+/// 手動確認の結果。更新を受け入れた場合は再起動するので、ここには戻らない。
+#[derive(serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CheckOutcome {
+    UpToDate,
+    Declined,
+}
+
+/// 新版があれば承諾を得て更新する。最新なら `UpToDate`、見送られたら `Declined`。
+pub async fn check_interactive(app: &AppHandle) -> tauri_plugin_updater::Result<CheckOutcome> {
+    let Some(update) = app.updater()?.check().await? else { return Ok(CheckOutcome::UpToDate) };
     let accepted = app
         .dialog()
         .message(format!("新しいバージョン {} があります。更新して再起動しますか？", update.version))
@@ -22,5 +35,5 @@ async fn check(app: &AppHandle) -> tauri_plugin_updater::Result<()> {
         update.download_and_install(|_, _| {}, || {}).await?;
         app.restart();
     }
-    Ok(())
+    Ok(CheckOutcome::Declined)
 }
