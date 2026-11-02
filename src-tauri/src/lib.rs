@@ -127,7 +127,7 @@ fn build_tray(app: &AppHandle) -> Result<TrayParts, tauri::Error> {
 
     let tray = TrayIconBuilder::with_id("main")
         .icon(icon)
-        .tooltip("auto-clicker")
+        .tooltip("オートクリッカー")
         .menu(&menu)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match tray::tray_action(event.id().as_ref()) {
