@@ -34,7 +34,7 @@ use environment::{EnvInfo, Os};
 use input::InputBackend;
 use model::{Button, ClickKind, ClickTarget, Interval, Position, Sequence, Settings, StopCondition, TimeUnit};
 use store::Store;
-use tray::{Rgba, TrayAction};
+use tray::TrayAction;
 use validate::Rect;
 use window_policy::{CloseAction, Visibility};
 
@@ -55,7 +55,6 @@ struct AppState {
 struct TrayParts {
     tray: TrayIcon,
     toggle_item: MenuItem<Wry>,
-    base_icon: Rgba,
 }
 
 #[derive(Serialize, Clone)]
@@ -102,8 +101,9 @@ fn update_tray(app: &AppHandle, run_state: RunState) {
     if let Some(entry) = tray::tray_menu(run_state).first() {
         let _ = parts.toggle_item.set_text(entry.label);
     }
-    let icon = tray::tray_icon(run_state, &parts.base_icon);
-    let _ = parts.tray.set_icon(Some(Image::new_owned(icon.pixels, icon.width, icon.height)));
+    if let Ok(icon) = Image::from_bytes(tray::tray_icon_png(run_state)) {
+        let _ = parts.tray.set_icon(Some(icon));
+    }
 }
 
 /// 「終了」。実行中なら止めてから終了する。
@@ -122,8 +122,7 @@ fn build_tray(app: &AppHandle) -> Result<TrayParts, tauri::Error> {
         .collect::<Result<Vec<_>, _>>()?;
     let refs: Vec<&dyn IsMenuItem<Wry>> = items.iter().map(|item| item as &dyn IsMenuItem<Wry>).collect();
     let menu = Menu::with_items(app, &refs)?;
-    let icon = app.default_window_icon().cloned().ok_or(tauri::Error::WindowNotFound)?;
-    let base_icon = Rgba { width: icon.width(), height: icon.height(), pixels: icon.rgba().to_vec() };
+    let icon = Image::from_bytes(tray::tray_icon_png(RunState::Idle))?;
 
     let tray = TrayIconBuilder::with_id("main")
         .icon(icon)
@@ -147,7 +146,7 @@ fn build_tray(app: &AppHandle) -> Result<TrayParts, tauri::Error> {
             }
         })
         .build(app)?;
-    Ok(TrayParts { tray, toggle_item: items[0].clone(), base_icon })
+    Ok(TrayParts { tray, toggle_item: items[0].clone() })
 }
 
 /// `AutostartControl` の実 OS 実装。ロジックは持たない（手動で確認する）。
