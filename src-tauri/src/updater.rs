@@ -32,7 +32,15 @@ pub async fn check_interactive(app: &AppHandle) -> tauri_plugin_updater::Result<
         .buttons(MessageDialogButtons::OkCancelCustom("更新する".into(), "あとで".into()))
         .blocking_show();
     if accepted {
-        update.download_and_install(|_, _| {}, || {}).await?;
+        if let Err(error) = update.download_and_install(|_, _| {}, || {}).await {
+            // 無言で失敗すると「押しても何も起きない」ように見えるので、理由を見せる。
+            app.dialog()
+                .message(format!("更新に失敗しました。
+{error}"))
+                .title("アップデート")
+                .blocking_show();
+            return Err(error);
+        }
         app.restart();
     }
     Ok(CheckOutcome::Declined)
