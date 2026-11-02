@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "auto-clicker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "com.heyyo.auto-clicker",
   "build": {
     "beforeDevCommand": "bun run dev",
@@ -17,7 +17,10 @@
         "height": 820,
         "minWidth": 380,
         "minHeight": 520,
-        "visible": false
+        "visible": false,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false
       }
     ],
     "security": {
@@ -34,7 +37,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "createUpdaterArtifacts": true
+    "createUpdaterArtifacts": true,
+    "windows": {
+      "certificateThumbprint": "9386191B5CD3D603E267FC3D28A8CC9C558D7B49",
+      "digestAlgorithm": "sha256"
+    }
   },
   "plugins": {
     "updater": {

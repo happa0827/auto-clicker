@@ -1,3 +1,88 @@
+.frame {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  border-radius: 32px;
+  overflow: hidden;
+  background: var(--background);
+  border: 1px solid var(--border);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 20px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.winButton {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.close {
+  background: #ff5f57;
+}
+
+.minimize {
+  background: #febc2e;
+}
+
+.maximize {
+  background: #28c840;
+}
+
+.winButton::after {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgb(0 0 0 / 0.6);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+}
+
+.controls:hover .winButton::after {
+  opacity: 1;
+}
+
+.close::after {
+  content: "×";
+  font-size: 13px;
+}
+
+.minimize::after {
+  content: "−";
+}
+
+.maximize::after {
+  content: "+";
+}
+
+.winButton:hover {
+  filter: brightness(0.85);
+}
+
+.scroller {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .page {
   display: grid;
   gap: var(--space-8);

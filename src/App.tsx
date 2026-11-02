@@ -24,6 +24,7 @@ import { describeFieldError } from "@/lib/field-errors";
 import { parseRounds } from "@/lib/rounds";
 import { describeNotice } from "@/lib/run-status";
 import type { Preset, Settings, StopCondition } from "@/lib/types";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import pkg from "../package.json";
 import styles from "./App.module.css";
 
@@ -137,6 +138,30 @@ export default function App() {
   const errors = built.ok ? undefined : built.errors;
 
   return (
+    <div className={styles.frame}>
+      <div className={styles.titlebar} data-tauri-drag-region>
+        <div className={styles.controls}>
+          <button
+            type="button"
+            className={`${styles.winButton} ${styles.close}`}
+            aria-label="閉じる"
+            onClick={() => void getCurrentWindow().close()}
+          />
+          <button
+            type="button"
+            className={`${styles.winButton} ${styles.minimize}`}
+            aria-label="最小化"
+            onClick={() => void getCurrentWindow().minimize()}
+          />
+          <button
+            type="button"
+            className={`${styles.winButton} ${styles.maximize}`}
+            aria-label="最大化"
+            onClick={() => void getCurrentWindow().toggleMaximize()}
+          />
+        </div>
+      </div>
+      <div className={styles.scroller}>
     <main className={styles.page}>
       <header className={styles.header}>
         <p className={styles.version}>v{pkg.version}</p>
@@ -369,5 +394,7 @@ export default function App() {
         </>
       )}
     </main>
+      </div>
+    </div>
   );
 }
